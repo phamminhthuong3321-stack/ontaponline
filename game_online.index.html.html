@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Giải cứu Robot Bit - Ngân Hàng Câu Hỏi & Thách Đấu</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
+    <!-- Cấu hình Bản đồ Import (Import Map) để trình duyệt hiểu được lệnh import của bạn -->
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js",
+          "firebase/analytics": "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js",
+          "firebase/database": "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js"
+        }
+      }
+    </script>
+
+<style>
+:root{--bg:#7dd3fc;--card:rgba(255,255,255,.94);--tx:#0c2a4a;--mu:#47698d;--ac:#0ea5e9;--ok:#16a34a;--no:#dc2626;--wa:#b45309;--bd:#bae6fd;--sky:#38bdf8;--sky2:#e0f7ff;--sea:#0284c7;--sea2:#38bdf8;--sand:#fde68a;--sand2:#fbbf24;--sun:#fde047;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1020;--card:rgba(22,29,56,.94);--tx:#eaf0ff;--mu:#9fb0dc;--ac:#22d3ee;--ok:#34d399;--no:#f87171;--wa:#fbbf24;--bd:#2a3563;--sky:#0b1020;--sky2:#24305e;--sea:#0f4c75;--sea2:#1c6ba0;--sand:#7a6840;--sand2:#4d3f28;--sun:#e5e7eb}}
+:root[data-theme="dark"]{--bg:#0b1020;--card:rgba(22,29,56,.94);--tx:#eaf0ff;--mu:#9fb0dc;--ac:#22d3ee;--ok:#34d399;--no:#f87171;--wa:#fbbf24;--bd:#2a3563;--sky:#0b1020;--sky2:#24305e;--sea:#0f4c75;--sea2:#1c6ba0;--sand:#7a6840;--sand2:#4d3f28;--sun:#e5e7eb}
+
+body { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; margin:0;background:linear-gradient(var(--sky),var(--sky2)) fixed;color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh }
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.sun{position:absolute;top:6vh;right:8vw;width:70px;height:70px;border-radius:50%;background:var(--sun);box-shadow:0 0 40px 12px color-mix(in srgb,var(--sun) 60%,transparent);animation:pulse 4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08)}}
+.cl{position:absolute;font-size:56px;opacity:.9;animation:drift 60s linear infinite}
+.c1{top:10vh;left:0}.c2{top:24vh;left:0;font-size:38px;animation-duration:90s;animation-delay:-40s}
+@keyframes drift{from{transform:translateX(-20vw)}to{transform:translateX(120vw)}}
+.sea{position:absolute;left:0;right:0;bottom:11vh;height:20vh;background:linear-gradient(var(--sea2),var(--sea))}
+.wv{position:absolute;left:0;top:-30px;width:200%;height:36px;fill:var(--sea2);animation:wave 8s linear infinite}
+.w2{top:-20px;fill:var(--sea);opacity:.7;animation-duration:12s;animation-direction:reverse}
+@keyframes wave{to{transform:translateX(-50%)}}
+.sand{position:absolute;left:0;right:0;bottom:0;height:12vh;background:linear-gradient(var(--sand),var(--sand2));border-radius:60% 60% 0 0/24px 24px 0 0}
+.dec{position:absolute;bottom:2vh;font-size:40px}
+.palm{left:3vw;bottom:6vh;font-size:64px}
+.crab{animation:crab 14s ease-in-out infinite alternate}
+@keyframes crab{from{left:15vw}to{left:78vw}}
+#mt{position:fixed;right:10px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:5;background:var(--card);border:1px solid var(--bd);border-radius:50%;width:40px;height:40px;font-size:18px}
+.bitrow{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.bit{position:relative;font-size:46px;line-height:1}
+.bit i{position:absolute;right:-8px;bottom:-6px;font-size:22px;font-style:normal}
+.bub{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:6px 12px;font-size:14px;font-weight:600}
+.bit.happy{animation:jump .6s}.bit.sad{animation:shake .5s}.bit.worry{animation:wig .4s}.bit.low{animation:blink 1s infinite}.bit.dead{transform:rotate(90deg);opacity:.6}
+@keyframes jump{30%{transform:translateY(-22px) scale(1.15)}}
+@keyframes wig{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+@keyframes blink{50%{filter:drop-shadow(0 0 10px #f00)}}
+.fx{position:fixed;top:-30px;pointer-events:none;z-index:9;animation:fall 1.7s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.hs{margin-top:14px;padding:10px;border-radius:12px;background:color-mix(in srgb,var(--ac) 12%,transparent);font-size:14px;text-align:left}
+.lane{position:relative;height:64px;margin:6px 0 12px;border-radius:14px;overflow:hidden;background:linear-gradient(var(--sea2) 0 22%,var(--sand) 22%,var(--sand2));border:1px solid var(--bd)}
+.lane .bit{position:absolute;bottom:4px;font-size:40px;transition:left .7s cubic-bezier(.3,1.4,.5,1)}
+.mk{position:absolute;bottom:10px;font-size:9px;opacity:.3}
+.home{position:absolute;right:6px;bottom:4px;font-size:34px}
+.wave{position:absolute;top:2px;right:-50px;font-size:44px;opacity:0}
+.wave.go2{animation:sweep 1.1s ease-in}
+@keyframes sweep{0%{right:-50px;opacity:1}100%{right:100%;opacity:1}}
+.bit.party{animation:jump .6s 2}
+#bn{position:fixed;left:50%;top:28%;z-index:10;pointer-events:none;font-weight:800;font-size:clamp(20px,6vw,30px);line-height:1.3;text-align:center;padding:12px 22px;border-radius:20px;background:var(--card);border:3px solid var(--wa);opacity:0;transform:translate(-50%,0)}
+#bn.on{animation:pop 1.8s}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,20px) scale(.5)}12%{opacity:1;transform:translate(-50%,0) scale(1.15)}22%{transform:translate(-50%,0) scale(1)}80%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-50%,-30px) scale(1)}}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+.w{max-width:560px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:18px}
+h1{margin:6px 0;font-size:24px}
+.c{text-align:center}
+.big{font-size:84px;line-height:1;display:inline-block}
+.bob{animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+button{font:inherit;color:inherit;cursor:pointer}
+.go{background:var(--ac);color:#04121a;border:0;border-radius:14px;padding:12px 22px;font-weight:700;font-size:16px;margin-top:10px}
+.hud{display:flex;justify-content:space-between;align-items:center;font-weight:700;margin-bottom:10px}
+.track{display:flex;align-items:center;margin:6px 0 12px}
+.dot{flex:1;height:8px;background:color-mix(in srgb,var(--tx) 22%,transparent);margin:0 2px;border-radius:4px;position:relative}
+.dot.on{background:var(--ok)}.dot.cur{background:var(--ac)}.dot.bad{background:var(--no)}
+.tm{height:8px;background:color-mix(in srgb,var(--tx) 22%,transparent);border-radius:4px;overflow:hidden;margin-bottom:12px}
+.tm i{display:block;height:100%;width:100%;background:var(--ac);transition:width .1s linear}
+.q{font-size:19px;font-weight:700;margin:4px 0 14px}
+.opt{display:block;width:100%;text-align:left;background:transparent;border:2px solid var(--bd);border-radius:14px;padding:12px 14px;margin:8px 0;transition:.15s}
+.opt:hover:not(:disabled){border-color:var(--ac)}
+.opt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,transparent)}
+.opt.no{border-color:var(--no);background:color-mix(in srgb,var(--no) 18%,transparent)}
+.opt.off{opacity:.25}
+.life{display:flex;gap:8px;margin-top:10px}
+.life button{flex:1;background:transparent;border:1px dashed var(--wa);color:var(--wa);border-radius:12px;padding:8px;font-weight:600}
+.life button:disabled{opacity:.35}
+.fb{margin-top:12px;padding:12px;border-radius:12px;background:color-mix(in srgb,var(--ac) 12%,transparent);font-size:15px}
+.mu{color:var(--mu)}
+.hide{display:none !important;}
+.st{display:flex;gap:10px;justify-content:center;margin:14px 0}
+.st div{background:var(--bg);border-radius:12px;padding:10px 16px}
+.st b{display:block;font-size:22px}
+#online-status { font-size: 12px; font-weight: bold; margin-bottom: 10px; padding: 6px; border-radius: 8px; text-align: center; }
+.status-off { background: #fef08a; color: #854d0e; }
+.status-on { background: #bbf7d0; color: #166534; }
+
+/* ===== STYLE CHO QUẢN LÝ VÀ ĐĂNG NHẬP ===== */
+.inp { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var(--bd); border-radius: 12px; background: var(--bg); color: var(--tx); font: inherit; box-sizing: border-box; outline: none; }
+.inp:focus { border-color: var(--ac); }
+.ptable { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; background: var(--card); }
+.ptable th, .ptable td { border: 1px solid var(--bd); padding: 8px; text-align: left; }
+.ptable th { background: color-mix(in srgb, var(--ac) 20%, transparent); font-weight: bold; }
+.btn-sm { padding: 6px 10px; font-size: 12px; border-radius: 8px; background: var(--wa); color: #fff; border: none; cursor: pointer; font-weight: bold; transition: .2s; }
+.btn-sm:hover { opacity: .8; }
+.flex-gap { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+.box { border: 2px dashed var(--bd); padding: 10px; border-radius: 12px; margin-bottom: 14px; background: var(--sky2); }
+/* ===== STYLE CHO GIAO DIỆN UPLOAD AZOTA ===== */
+.q-block { text-align: left; border: 2px solid var(--bd); padding: 12px; margin-bottom: 12px; border-radius: 12px; background: var(--sky2); }
+.q-text { font-weight: bold; margin-bottom: 10px; color: var(--tx); font-size: 15px; }
+.opt-list { display: flex; flex-direction: column; gap: 8px; }
+.opt-item { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 8px; border-radius: 8px; border: 1px solid transparent; transition: .2s; background: var(--card); }
+.opt-item:hover { border-color: var(--ac); }
+.opt-item input[type="radio"] { margin-top: 4px; cursor: pointer; transform: scale(1.3); accent-color: var(--ok); }
+.opt-item span { flex: 1; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="bg"><div class="sun"></div><div class="cl c1">☁️</div><div class="cl c2">☁️</div><div class="sea"><svg class="wv" viewBox="0 0 2400 60" preserveAspectRatio="none"><path d="M0 30 Q75 0 150 30 T300 30 T450 30 T600 30 T750 30 T900 30 T1050 30 T1200 30 T1350 30 T1500 30 T1650 30 T1800 30 T1950 30 T2100 30 T2250 30 T2400 30 V60 H0Z"/></svg><svg class="wv w2" viewBox="0 0 2400 60" preserveAspectRatio="none"><path d="M0 30 Q75 0 150 30 T300 30 T450 30 T600 30 T750 30 T900 30 T1050 30 T1200 30 T1350 30 T1500 30 T1650 30 T1800 30 T1950 30 T2100 30 T2250 30 T2400 30 V60 H0Z"/></svg></div><div class="sand"></div><div class="dec palm">🌴</div><div class="dec crab">🦀</div></div>
+<button id="mt" onclick="mt()">🔊</button><div id="bn"></div><div class="w">
+
+<!-- MÀN HÌNH ĐĂNG NHẬP -->
+<div id="s-login" class="card c">
+    <div id="online-status" class="status-off">Chế độ: ĐANG KẾT NỐI SERVER...</div>
+    <div class="big bob">🤖</div>
+    <h1>Đăng nhập Người chơi</h1>
+    <p class="mu">Nhập thông tin của bạn để quản lý Hộp thư & Thách đấu!</p>
+    <input type="text" id="pName" class="inp" placeholder="Nhập họ và tên (VD: Nguyễn Văn A)">
+    <input type="text" id="pClass" class="inp" placeholder="Nhập lớp (VD: 10A1)">
+    <div class="flex-gap">
+        <button class="go" onclick="login()">Vào Quản Lý</button>
+    </div>
+</div>
+
+<!-- MÀN HÌNH QUẢN LÝ TỔNG (DASHBOARD) -->
+<div id="s-manage" class="card c hide">
+    <h1 id="dashboard-title">Bảng Điều Khiển</h1>
+    
+    <div class="flex-gap" style="margin-bottom:14px">
+        <button class="go" style="background:var(--ok)" onclick="show('s0')">🎮 Chơi Tự Do</button>
+        <button class="go" style="background:#8b5cf6" onclick="show('s-bank')">📝 Tạo Bộ Câu Hỏi</button>
+        <button class="go" style="background:var(--mu);color:white" onclick="logout()">Đổi người</button>
+    </div>
+
+    <div class="box">
+        <h2 style="margin-top:0;font-size:18px">📬 Hộp Thư Thách Đấu</h2>
+        <div style="overflow-x:auto;" id="inbox-container">
+            <!-- Nội dung Hộp thư sẽ render ở đây -->
+        </div>
+    </div>
+
+    <div class="box">
+        <h2 style="margin-top:0;font-size:18px">🏆 Bảng Xếp Hạng Chung</h2>
+      <div style="overflow-x:auto;">
+            <table class="ptable" id="pTable">
+                <thead>
+                    <tr>
+                        <th>Họ tên</th>
+                        <th>Lớp</th>
+                        <th>Điểm Max</th>
+                        <th style="text-align:center">Trạng thái</th>
+                        <th class="no-export">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="pBody"></tbody>
+            </table>
+        </div>
+        <!-- Vị trí nút "Xem tất cả / Thu gọn" -->
+        <div id="more-players-box" style="text-align:center; margin-top:8px;"></div>
+        <div class="flex-gap" style="margin-top:10px">
+            <button class="btn-sm" style="background:#16a34a" onclick="exportExcel()">📉 Excel</button>
+            <button class="btn-sm" style="background:#2563eb" onclick="exportWord()">📄 Word</button>
+            <button class="btn-sm" style="background:#dc2626" onclick="exportPDF()">📕 PDF</button>
+        </div>
+    </div>
+</div>
+<!-- MÀN HÌNH CHỌN BỘ CÂU HỎI ĐỂ THÁCH ĐẤU -->
+<div id="s-select-bank" class="card c hide">
+    <h1>⚔️ Gửi Lời Thách Đấu</h1>
+    <p class="mu" id="chal-target-name"></p>
+    
+    <!-- KHUNG CHỌN BỘ CÂU HỎI ĐÃ TẠO -->
+    <div class="box" style="text-align:left; margin: 16px 0;">
+        <label style="font-weight:bold; font-size:14px; display:block; margin-bottom:8px;">Chọn bộ đề thi muốn gửi:</label>
+        <select id="bank-select-dropdown" class="inp" style="background:white; font-size:15px; font-weight:600; cursor:pointer;">
+            <!-- Danh sách bộ câu hỏi sẽ nạp tự động vào đây -->
+        </select>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+            <span class="mu" style="font-size:12px;">Chưa có đề mong muốn?</span>
+            <button class="btn-sm" style="background:#8b5cf6;" onclick="show('s-bank')">➕ Tạo đề mới ngay</button>
+        </div>
+    </div>
+
+    <div class="flex-gap">
+        <button class="go" style="background:var(--ok)" onclick="confirmSendChallenge()">⚔️ Gửi Thách Đấu</button>
+        <button class="go" style="background:var(--mu);color:white" onclick="show('s-manage')">Quay lại Quản Lý</button>
+    </div>
+</div>
+<!-- MÀN HÌNH TẠO NGÂN HÀNG CÂU HỎI (UPLOAD FILE NHƯ AZOTA) -->
+<div id="s-bank" class="card c hide">
+    <h1>Tạo Bộ Câu Hỏi (Tải File)</h1>
+    <p class="mu" style="font-size:13px">Tải lên file <b>.docx</b> hoặc <b>.txt</b>. File cần soạn chuẩn: <i>Câu 1: Nội dung... A. Đáp án 1  B. Đáp án 2...</i></p>
+    
+    <input type="text" id="bTitle" class="inp" placeholder="Tên bộ câu hỏi (VD: Đề thi 15p AI)">
+    
+    <div style="margin: 10px 0;">
+        <input type="file" id="qFileInput" accept=".txt, .docx" class="inp" style="background: white; padding: 8px; cursor: pointer;" onchange="handleFileUpload(event)">
+    </div>
+    
+    <!-- Vùng hiển thị câu hỏi để chọn đáp án -->
+    <div id="qPreview" style="max-height: 450px; overflow-y: auto; padding-right: 5px;">
+        <div class="box" style="text-align:center;">
+            <p class="mu">Chưa có dữ liệu. Hãy tải file của bạn lên.</p>
+        </div>
+    </div>
+
+    <div class="flex-gap">
+        <button class="go" onclick="saveUploadBank()">💾 Lưu Bộ Câu Hỏi</button>
+        <button class="go" style="background:var(--mu);color:white" onclick="show('s-manage')">Hủy</button>
+    </div>
+</div>
+<!-- MÀN HÌNH CHỜ BẮT ĐẦU CHƠI TỰ DO -->
+<div id="s0" class="card c hide">
+    <div class="big bob">🤖</div>
+    <h1>Giải cứu Robot Bit</h1>
+    <p class="mu">Chơi tự do với bộ câu hỏi mặc định. <b>Điểm = Số câu đúng / Tổng số câu x 10 (Thang 10).</b></p>
+    <div class="flex-gap">
+        <button class="go" onclick="startFreePlay()">Bắt đầu chơi</button>
+        <button class="go" style="background:var(--mu);color:white" onclick="show('s-manage')">Quay lại Quản Lý</button>
+    </div>
+    <div class="hs" id="hs0"></div>
+</div>
+
+<!-- MÀN HÌNH CHƠI GAME -->
+<div id="s1" class="hide">
+    <div id="bs" class="bub" style="display:inline-block;margin-bottom:8px"></div>
+    <div class="hud"><span id="lv">🔋🔋🔋</span><span id="cb" class="mu"></span><span id="sc">0/10 điểm</span></div>
+    <div class="lane"><div id="mk"></div><div id="bit" class="bit">🤖<i id="bf">🙂</i></div><div class="home">🏠</div><div id="wv2" class="wave">🌊</div></div>
+    <div class="tm"><i id="tb"></i></div>
+    <div class="card" id="cd">
+    <div class="mu" id="no" style="font-size:14px"></div>
+    <div class="q" id="qt"></div>
+    <div id="op"></div>
+    <div class="life"><button id="l1" onclick="fifty()">🪄 50:50</button><button id="l2" onclick="plus()">⏳ +10 giây</button></div>
+    <div id="fb" class="fb hide"></div>
+    <div class="c"><button id="nx" class="go hide" onclick="next()">Tiếp tục ➜</button></div>
+    </div>
+</div>
+
+<!-- MÀN HÌNH KẾT THÚC -->
+<div id="s2" class="card c hide">
+    <div class="big" id="ei">🏆</div>
+    <h1 id="et"></h1>
+    <p class="mu" id="ed"></p>
+    <div class="st"><div><b id="fs">0/10</b>điểm</div><div><b id="fc">0/10</b>đúng</div><div><b id="fm">0</b>chuỗi max</div></div>
+    <div class="hs" id="hs2"></div>
+    <div class="flex-gap">
+        <button class="go" style="background:var(--mu);color:white" onclick="show('s-manage');">Về Bảng Điều Khiển</button>
+    </div>
+</div>
+
+</div>
+
+<!-- SỬ DỤNG MODULE TYPE ĐỂ CHẠY CẤU HÌNH CỦA BẠN -->
+<script type="module">
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+import { getDatabase, ref, onValue, set, onDisconnect } from "firebase/database";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBrQTq7mEaAmhgix6RA3EPkFX2dSPoCOPw",
+  authDomain: "gamerobotbit.firebaseapp.com",
+  databaseURL: "https://gamerobotbit-default-rtdb.firebaseio.com",
+  projectId: "gamerobotbit",
+  storageBucket: "gamerobotbit.firebasestorage.app",
+  messagingSenderId: "149856513438",
+  appId: "1:149856513438:web:72c99976fb472af5527a8f",
+  measurementId: "G-0KVFVCT3BH"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const db = getDatabase(app);
+
+// DATA VARIABLES
+let playersList = [];
+let customBanks = [];
+let challenges = [];
+let onlineUsers = {};
+let showAllPlayers = false;
+let autoLoginAttempted = false;
+let currentPlayer = null;
+let playingChallengeId = null;
+let targetToChallenge = null;
+
+// LẮNG NGHE TÌNH TRẠNG KẾT NỐI ONLINE
+onValue(ref(db, '.info/connected'), (snap) => {
+    if (snap.val() === true) {
+        document.getElementById('online-status').textContent = "Chế độ: ONLINE (Kết nối toàn cầu 🌐)";
+        document.getElementById('online-status').className = "status-on";
+    } else {
+        document.getElementById('online-status').textContent = "Đang kết nối Database Server...";
+        document.getElementById('online-status').className = "status-off";
+    }
+});
+
+// LẮNG NGHE DỮ LIỆU REALTIME
+// Ép kiểu dữ liệu Firebase luôn luôn là Mảng (Array) để nút bấm không bao giờ bị liệt
+onValue(ref(db, 'bitPlayersList'), (snap) => { let v = snap.val(); playersList = v ? Object.values(v) : []; updateUI(); });
+onValue(ref(db, 'bitCustomBanks'), (snap) => { let v = snap.val(); customBanks = v ? Object.values(v) : []; updateUI(); });
+onValue(ref(db, 'bitChallenges'), (snap) => { let v = snap.val(); challenges = v ? Object.values(v) : []; updateUI(); });
+// LẮNG NGHE TRẠNG THÁI ON/OFF REALTIME
+onValue(ref(db, 'bitOnlineUsers'), (snap) => {
+    onlineUsers = snap.val() || {};
+    updateUI();
+});
+
+function getPlayerKey(n, c) {
+    return encodeURIComponent((n + '_' + c).trim().toLowerCase()).replace(/\./g, '_').replace(/%/g, '_');
+}
+// HÀM LƯU DỮ LIỆU
+function saveData(key, data) {
+    set(ref(db, key), data);
+}
+
+// ------------------------------------------------------------------------
+// DATA CÂU HỎI MẶC ĐỊNH
+const RAW_Q=[
+{q:"Ban đầu, hệ chuyên gia là gì?",a:["Chương trình máy tính dựa trên luật suy diễn và tri thức của chuyên gia","Robot có hình dáng như con người","Một loại mạng xã hội cho các chuyên gia","Thiết bị lưu trữ dữ liệu y tế"],e:"Hệ chuyên gia ban đầu được thiết kế dựa trên luật suy diễn và tri thức của chuyên gia trong từng lĩnh vực cụ thể."},
+{q:"Nhờ Học máy, nhiều hệ chuyên gia hiện đại có thêm khả năng gì?",a:["Tự học từ dữ liệu để tự hình thành luật và tri thức","Tự sửa chữa phần cứng khi bị hỏng","Tự động kết nối với mọi mạng Internet","Không cần dữ liệu vẫn hoạt động"],e:"Với Học máy, hệ chuyên gia có thể tự học từ dữ liệu để tự hình thành các luật và tri thức."},
+{q:"Phần mềm IBM Watson for Oncology góp phần nâng cao hiệu quả điều trị bệnh nào?",a:["Ung thư","Cúm mùa","Tiểu đường","Răng miệng"],e:"Các chuyên gia y tế khẳng định IBM Watson for Oncology góp phần nâng cao hiệu quả điều trị ung thư (lĩnh vực y học và chăm sóc sức khoẻ)."},
+{q:"Ô tô tự lái và máy bay không người lái thuộc lĩnh vực nào phát triển mạnh nhờ AI?",a:["Giao thông vận tải","Giáo dục","Tài chính, ngân hàng","Khoa học xã hội"],e:"AI được dùng để phát triển phương tiện tự lái, quản lí giao thông thông minh và định tuyến phương tiện vận tải."},
+{q:"Sự kết hợp IoT và AI (AIoT) giúp các nhà khoa học làm gì?",a:["Giám sát môi trường tự nhiên và theo dõi biến đổi khí hậu","Dịch thơ cổ sang tiếng Anh","Thay thế hoàn toàn giáo viên","Chế tạo vũ khí tự động"],e:"AIoT cho phép các nhà khoa học giám sát môi trường tự nhiên và theo dõi tình hình biến đổi khí hậu."},
+{q:"Các thành tựu hiện tại của AI nói chung thuộc phạm vi nào?",a:["Trí tuệ nhân tạo hẹp (yếu)","Trí tuệ nhân tạo tổng quát (mạnh)","Siêu trí tuệ vượt con người","Trí tuệ sinh học"],e:"Thành tựu hiện nay vẫn thuộc Trí tuệ nhân tạo hẹp/yếu. AI tổng quát/mạnh vẫn đang được nghiên cứu."},
+{q:"AI tạo sinh (Generative AI) tập trung vào việc gì?",a:["Xây dựng thuật toán và mô hình tự động tạo nội dung như hình ảnh, âm thanh, văn bản","Chỉ phân loại thư rác","Chỉ điều khiển đèn giao thông","Chỉ lưu trữ dữ liệu lớn"],e:"AI tạo sinh tạo nội dung (hình ảnh, âm thanh, văn bản) một cách tự động, dùng trong nghệ thuật, giải trí, quảng cáo, trò chơi..."},
+{q:"ChatGPT là hệ thống xử lí ngôn ngữ tiên tiến do tổ chức nào phát triển?",a:["OpenAI","IBM","Google Maps","Wikipedia"],e:"ChatGPT do OpenAI phát triển, được huấn luyện trên lượng lớn dữ liệu văn bản (như sách, bài báo, trang web)."},
+{q:"Nhận định: Nhiều ứng dụng AI hiện nay là “hộp đen”, gây khó khăn cho việc hiểu các quyết định được đưa ra như thế nào.",tf:1,a:["Đúng","Sai"],e:"Đúng. Đây là nguy cơ thiếu minh bạch: khó hiểu quyết định của AI dẫn đến thiếu trách nhiệm giải trình."},
+{q:"Nhận định: Có thể giao toàn quyền quyết định cho AI điều khiển vũ khí sát thương vì AI không bao giờ sai.",tf:1,a:["Sai","Đúng"],e:"Sai. Quyết định sai có thể gây hại trực tiếp đến sinh mạng con người, nên cần ngăn cấm; AI phải được xây dựng, sử dụng minh bạch và có trách nhiệm."}
+];
+
+const $=id=>document.getElementById(id);
+
+function show(id){
+    ["s-login", "s-manage", "s-bank", "s-select-bank", "s0", "s1", "s2"].forEach(s => {
+        let el = $(s); if(el) el.classList.toggle("hide", s !== id);
+    });
+    if(id === 's-manage') updateUI();
+}
+
+function login(isAuto = false) {
+    let n = $("pName").value.trim();
+    let c = $("pClass").value.trim();
+    if(!n || !c) {
+        if(!isAuto) alert("Vui lòng nhập đầy đủ Họ tên và Lớp!");
+        return;
+    }
+    
+    let p = playersList.find(x => x.n.toLowerCase() === n.toLowerCase() && x.c.toLowerCase() === c.toLowerCase());
+    if(!p) {
+        p = { n: n, c: c, s: 0, r: 0, d: new Date().toLocaleDateString('vi-VN') };
+        playersList.push(p);
+        saveData('bitPlayersList', playersList);
+    }
+    currentPlayer = p;
+
+    // Ghi nhớ tài khoản vào thiết bị
+    localStorage.setItem('bit_saved_user', JSON.stringify({ n: p.n, c: p.c }));
+
+    // Cập nhật trạng thái ONLINE lên Firebase (tắt tab tự chuyển sang Off)
+    const userKey = getPlayerKey(p.n, p.c);
+    const userStatusRef = ref(db, 'bitOnlineUsers/' + userKey);
+    set(userStatusRef, true);
+    onDisconnect(userStatusRef).set(false);
+
+    $("dashboard-title").innerHTML = `👋 Bảng Điều Khiển của ${p.n}`;
+    show('s-manage');
+
+    // Tự động báo lời thách đấu mới nếu có
+    setTimeout(() => {
+        let pending = challenges.filter(x => x.toN.toLowerCase() === p.n.toLowerCase() && x.toC.toLowerCase() === p.c.toLowerCase() && x.status === 'pending');
+        if(pending.length > 0) {
+            alert(`📬 Chào ${p.n}! Bạn có ${pending.length} lời thách đấu mới đang chờ trong Hộp Thư!`);
+        }
+    }, 500);
+}
+
+function logout() {
+    if(currentPlayer) {
+        const userKey = getPlayerKey(currentPlayer.n, currentPlayer.c);
+        set(ref(db, 'bitOnlineUsers/' + userKey), false);
+    }
+    localStorage.removeItem('bit_saved_user');
+    currentPlayer = null;
+    show('s-login');
+}
+
+function updateUI() {
+    if(!document.getElementById('s-manage').classList.contains('hide') && currentPlayer){
+        renderPlayers();
+        renderInbox();
+    }
+}
+
+// BẢNG XẾP HẠNG TOP 10 + ON/OFF
+function toggleShowAll() {
+    showAllPlayers = !showAllPlayers;
+    renderPlayers();
+}
+
+function renderPlayers() {
+    let sorted = [...playersList].sort((a,b) => b.s - a.s);
+    // Chỉ lấy 10 người đầu tiên, bấm "Xem tất cả" mới mở rộng
+    let displayList = showAllPlayers ? sorted : sorted.slice(0, 10);
+    let html = "";
+
+    if(sorted.length === 0) {
+        html = "<tr><td colspan='5' style='text-align:center' class='mu'>Chưa có người chơi nào</td></tr>";
+    } else {
+        displayList.forEach((p, idx) => {
+            let isCurrent = currentPlayer && (currentPlayer.n.toLowerCase() === p.n.toLowerCase() && currentPlayer.c.toLowerCase() === p.c.toLowerCase());
+            let pKey = getPlayerKey(p.n, p.c);
+            let isOnline = !!onlineUsers[pKey];
+
+            let statusBadge = isOnline 
+                ? `<span style="color:#16a34a;font-weight:bold;background:#dcfce7;padding:3px 8px;border-radius:10px;font-size:12px;">🟢 On</span>`
+                : `<span style="color:#64748b;font-weight:bold;background:#f1f5f9;padding:3px 8px;border-radius:10px;font-size:12px;">⚪ Off</span>`;
+
+            let rankIcon = idx === 0 ? '🥇 ' : idx === 1 ? '🥈 ' : idx === 2 ? '🥉 ' : (idx + 1) + '. ';
+
+            html += `<tr>
+                <td>${rankIcon}${p.n} ${isCurrent ? '<b>(Bạn)</b>' : ''}</td>
+                <td>${p.c}</td>
+                <td style="font-weight:bold;color:var(--ok);text-align:center">${p.s}</td>
+                <td style="text-align:center">${statusBadge}</td>
+                <td class="no-export">
+                    <button class="btn-sm" onclick="openChallengeSelect('${p.n}','${p.c}')" ${isCurrent ? 'disabled style="background:gray;cursor:not-allowed;"' : ''}>
+                        ⚔️ Thách đấu
+                    </button>
+                </td>
+            </tr>`;
+        });
+    }
+    $("pBody").innerHTML = html;
+
+    const moreBox = $("more-players-box");
+    if(moreBox) {
+        if(sorted.length > 10) {
+            moreBox.innerHTML = `<button class="btn-sm" style="background:var(--ac);padding:6px 14px;" onclick="toggleShowAll()">
+                ${showAllPlayers ? '▲ Thu gọn (Top 10)' : '▼ Xem tất cả (' + sorted.length + ' người)'}
+            </button>`;
+        } else {
+            moreBox.innerHTML = "";
+        }
+    }
+}
+// NGÂN HÀNG CÂU HỎI
+function parseBankText(text) {
+    let blocks = text.split(/\n\s*\n+/).map(s => s.trim()).filter(Boolean);
+    let qList = [];
+
+    for (let b of blocks) {
+        let lines = b.split(/\n+/).map(l => l.trim()).filter(Boolean);
+        let q = "", ans = [], e = "";
+
+        for (let l of lines) {
+            if (/^Q\s*:/i.test(l)) {
+                q = l.replace(/^Q\s*:/i, '').trim();
+            } else if (/^A\s*:/i.test(l)) {
+                ans.push({ t: l.replace(/^A\s*:/i, '').trim(), c: true });
+            } else if (/^[B-E]\s*:/i.test(l)) {
+                ans.push({ t: l.replace(/^[B-E]\s*:/i, '').trim(), c: false });
+            } else if (/^E\s*:/i.test(l)) {
+                e = l.replace(/^E\s*:/i, '').trim();
+            }
+        }
+
+        if (q && ans.length >= 2) {
+            let correct = ans.find(x => x.c)?.t || ans[0].t;
+            let wrongs = ans.filter(x => !x.c).map(x => x.t);
+            qList.push({ q: q, a: [correct, ...wrongs], e: e });
+        }
+    }
+
+    return qList;
+}
+
+function saveCustomBank() {
+    let title = $("bTitle").value.trim();
+    let content = $("bContent").value.trim();
+    if(!title || !content) return alert("Vui lòng nhập Tên và Nội dung câu hỏi!");
+    
+    let qs = parseBankText(content);
+    if(qs.length === 0) return alert("Không tìm thấy câu hỏi hợp lệ! Hãy chắc chắn bạn gõ đúng định dạng Q:, A:, B:, C:...");
+
+    let bank = {
+        id: 'b_' + Date.now(), title: title, author: currentPlayer.n, authorClass: currentPlayer.c, qCount: qs.length, questions: qs
+    };
+    customBanks.push(bank);
+    saveData('bitCustomBanks', customBanks);
+    alert(`Đã lưu thành công bộ câu hỏi "${title}" gồm ${qs.length} câu!`);
+    show('s-manage');
+}
+
+// XỬ LÝ THÁCH ĐẤU & KHUNG CHỌN BỘ CÂU HỎI ĐÃ TẠO
+function openChallengeSelect(n, c) {
+    targetToChallenge = {n, c};
+    $("chal-target-name").innerHTML = `Bạn đang gửi thách đấu đến <b>${n} (${c})</b>. Hãy chọn bộ đề:`;
+    
+    let sel = $("bank-select-dropdown");
+    if(sel) {
+        let optHtml = `<option value="default">⭐ Bộ câu hỏi mặc định (10 câu về AI)</option>`;
+        
+        // Đưa toàn bộ đề đã tạo lên khung chọn
+        if(customBanks && customBanks.length > 0) {
+            optHtml += `<optgroup label="--- Bộ câu hỏi đã tạo ---">`;
+            customBanks.forEach(b => {
+                optHtml += `<option value="${b.id}">📁 ${b.title} (${b.qCount} câu) - [Tạo bởi: ${b.author}]</option>`;
+            });
+            optHtml += `</optgroup>`;
+        }
+        sel.innerHTML = optHtml;
+    }
+    show('s-select-bank');
+}
+
+function confirmSendChallenge() {
+    let sel = $("bank-select-dropdown");
+    let bankId = sel ? sel.value : 'default';
+    let bTitle = "Bộ Mặc Định (10 câu)";
+    
+    if(bankId !== 'default') {
+        let b = customBanks.find(x => x.id === bankId);
+        if(b) bTitle = b.title;
+    }
+    
+    let newChal = {
+        id: 'c_' + Date.now(),
+        fromN: currentPlayer.n, fromC: currentPlayer.c,
+        toN: targetToChallenge.n, toC: targetToChallenge.c,
+        bankId: bankId, bankTitle: bTitle, status: 'pending', targetScore: 0
+    };
+    challenges.push(newChal);
+    saveData('bitChallenges', challenges);
+    alert(`🎉 Đã gửi lời thách đấu bộ đề "${bTitle}" đến ${targetToChallenge.n}!`);
+    show('s-manage');
+}
+
+function renderInbox() {
+    let myInbox = challenges.filter(x => x.toN === currentPlayer.n && x.toC === currentPlayer.c);
+    let html = "";
+    if(myInbox.length === 0) {
+        html = "<p class='mu' style='text-align:center'>Bạn chưa có lời thách đấu nào.</p>";
+    } else {
+        html = `<table class="ptable" style="width:100%"><tr><th>Người gửi</th><th>Bộ câu hỏi</th><th>Trạng thái</th><th>Thao tác</th></tr>`;
+        myInbox.slice().reverse().forEach(c => {
+            let sTxt = c.status === 'pending' ? '<span style="color:var(--wa)">Chưa chơi</span>' : `<span style="color:var(--ok)">Đã xong (${c.targetScore} điểm)</span>`;
+            let aBtn = c.status === 'pending' ? `<button class="btn-sm" style="background:var(--ok)" onclick="playChallenge('${c.id}')">▶ Chơi ngay</button>` : `<span class="mu">-</span>`;
+            html += `<tr><td>${c.fromN}</td><td>${c.bankTitle}</td><td>${sTxt}</td><td>${aBtn}</td></tr>`;
+        });
+        html += `</table>`;
+    }
+    $("inbox-container").innerHTML = html;
+}
+
+// XUẤT FILE BÁO CÁO (EXCEL, WORD, PDF)
+function exportExcel() {
+    let tbl = document.getElementById('pTable').cloneNode(true);
+    tbl.querySelectorAll('.no-export').forEach(e => e.remove());
+    let wb = XLSX.utils.table_to_book(tbl, { sheet: "BangXepHang" });
+    XLSX.writeFile(wb, "BangXepHang_RobotBit.xlsx");
+}
+
+function exportWord() {
+    let tbl = document.getElementById('pTable').cloneNode(true);
+    tbl.querySelectorAll('.no-export').forEach(e => e.remove());
+    let content = "<h2>BẢNG XẾP HẠNG ROBOT BIT</h2>" + tbl.outerHTML;
+    let blob = new Blob(['\ufeff' + content], { type: 'application/msword' });
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = 'BangXepHang_RobotBit.doc';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+
+function exportPDF() {
+    let tbl = document.getElementById('pTable').cloneNode(true);
+    tbl.querySelectorAll('.no-export').forEach(e => e.remove());
+    let wrap = document.createElement('div');
+    wrap.innerHTML = "<h2 style='text-align:center'>BẢNG XẾP HẠNG ROBOT BIT</h2>";
+    wrap.appendChild(tbl);
+    html2pdf().set({ margin: 10, filename: 'BangXepHang_RobotBit.pdf' }).from(wrap).save();
+}
+
+// GAMEPLAY
+let pos=0,T=20,A,mute=false,ls=0,mem=[],Q=[],i,lives,score,combo,maxC,right,t,tick,locked,used1,used2,res,order;
+const sh=a=>{a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.random()*(k+1)|0;[a[k],a[j]]=[a[j],a[k]]}return a};
+
+function initA(){try{A=A||new(window.AudioContext||window.webkitAudioContext)();A.resume()}catch(e){}}
+function tone(f,d,ty,w,v){if(!A||mute)return;const o=A.createOscillator(),g=A.createGain(),s=A.currentTime+(w||0);o.type=ty||'sine';o.frequency.value=f;g.gain.setValueAtTime(v||.15,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(A.destination);o.start(s);o.stop(s+d)}
+function snd(k){try{({ok:()=>{tone(660,.12,'triangle');tone(990,.2,'triangle',.1)},bad:()=>{tone(220,.25,'sawtooth',0,.1);tone(150,.3,'sawtooth',.15,.1)},tick:()=>tone(1000,.06,'square',0,.05),win:()=>[523,659,784,1046].forEach((f,n)=>tone(f,.25,'triangle',n*.14)),lose:()=>[392,330,262,196].forEach((f,n)=>tone(f,.3,'sine',n*.2))})[k]()}catch(e){}}
+function sweep(){const w=$("wv2");w.classList.remove("go2");void w.offsetWidth;w.classList.add("go2")}
+function streak(c){const L=[["🔥","Chuỗi 3! Khởi động!"],["⚡","Chuỗi 4! Bùng nổ!"],["🚀","Chuỗi 5! Không thể cản!"],["🌟","Chuỗi 6! Siêu đẳng!"],["👑","Chuỗi "+c+"! HUYỀN THOẠI!"]],k=Math.min(c-3,4),b=$("bn");
+b.innerHTML=L[k][0].repeat(k+1)+"<br>"+L[k][1];b.classList.remove("on");void b.offsetWidth;b.classList.add("on");burst(["🎉","✨","🎊","🌟","👑"][k],12+k*10);bit("party");for(let n=0;n<k+3;n++)tone(523*Math.pow(1.25,n),.18,"triangle",n*.09)}
+function mt(){mute=!mute;$("mt").textContent=mute?"🔇":"🔊";initA()}
+const BM={idle:['🙂',['Sẵn sàng nạp pin!','Bit tin ở bạn!']],happy:['😄',['Yeah! Pin đầy ⚡','Giỏi quá! 🎉','Bit sạc xong rồi!']],sad:['😵',['Ối! Mất pin rồi...','Hức, sai rồi 😢']],low:['🥵',['Pin yếu quá! Cẩn thận!','Chỉ còn 1 pin thôi nha!']],worry:['😰',['Nhanh lên, sắp hết giờ!']],party:['🥳',['Chuỗi siêu đỉnh! 🎊','Bit đang nhảy múa!']],dead:['😴',['Zzz... hết pin']]};
+function bit(s){const m=BM[s],b=$("bit");b.className='bit';void b.offsetWidth;b.className='bit '+s;$("bf").textContent=m[0];$("bs").textContent=m[1][Math.random()*m[1].length|0]}
+function burst(e,n){for(let k=0;k<n;k++){const x=document.createElement('span');x.className='fx';x.textContent=e;x.style.left=Math.random()*100+'vw';x.style.animationDelay=Math.random()*.5+'s';x.style.fontSize=(16+Math.random()*18)+'px';document.body.appendChild(x);setTimeout(()=>x.remove(),2400)}}
+
+function hsList(){
+    let sorted = [...playersList].sort((a,b) => b.s - a.s).slice(0, 5);
+    if(!sorted.length) return '<span class="mu">🏆 Chưa có kỷ lục!</span>';
+    return '<b>🏆 Top 5 Server</b>'+sorted.map((e,n)=>`<div>${['🥇','🥈','🥉','4️⃣','5️⃣'][n]} ${e.n} - ${e.s}/10 đ</div>`).join('');
+}
+
+function startFreePlay(){
+    playingChallengeId = null;
+    $("hs0").innerHTML = hsList();
+    startGame(RAW_Q);
+}
+
+function playChallenge(cId) {
+    let c = challenges.find(x => x.id === cId);
+    playingChallengeId = cId;
+    if(c.bankId === 'default') {
+        startGame(RAW_Q);
+    } else {
+        let b = customBanks.find(x => x.id === c.bankId);
+        if(!b) return alert("Bộ câu hỏi này đã bị xóa hoặc không tồn tại!");
+        startGame(b.questions);
+    }
+}
+
+function startGame(questionBank) {
+  initA(); 
+  Q = sh(questionBank);
+  pos=0;i=0;lives=3;score=0;combo=0;maxC=0;right=0;used1=used2=false;res=[];
+  $("l1").disabled=$("l2").disabled=false;
+  show('s1');load();
+}
+
+function hud(){$("lv").textContent="🔋".repeat(lives)+"🪫".repeat(3-lives);$("sc").textContent=score+"/10 điểm";$("cb").textContent=combo>1?"🔥 Combo x"+combo:"";
+$("bit").style.left="calc("+pos*10+"\% - "+pos*9+"px)";$("mk").innerHTML=Array.from({length:9},(_,k)=>`<span class="mk" style="left:calc(${(k+1)*10}% - ${(k+1)*9}px + 18px)">●</span>`).join("")}
+
+function load(){locked=false;T=Q[i].tf?12:20;t=T;ls=0;bit(lives==1?"low":"idle");$("l1").disabled=used1||!!Q[i].tf;const q=Q[i];order=q.tf?(q.a[0]==="Đúng"?[0,1]:[1,0]):sh(Array.from(q.a.keys()));$("no").textContent="Câu "+(i+1)+"/"+Q.length+(q.tf?" · ⚡ ĐÚNG hay SAI?":"");$("qt").textContent=q.q;
+$("op").innerHTML=order.map((o,k)=>`<button class="opt" data-o="${o}" onclick="pick(${o})">${q.tf?(q.a[o]==="Đúng"?"✅":"❌"):"ABCD"[k]+"."} ${q.a[o]}</button>`).join("");
+$("fb").classList.add("hide");$("nx").classList.add("hide");hud();clearInterval(tick);
+tick=setInterval(()=>{
+  t-=.1; $("tb").style.width=Math.min(100,Math.max(0,t/T*100))+"\%"; $("tb").style.background=t<6?"var(--no)":"var(--ac)";
+  if(t<=5&&t>0&&Math.ceil(t)!==ls){ls=Math.ceil(t);snd("tick");bit("worry")}
+  if(t<=0){clearInterval(tick);pick(-1)}
+},100)}
+
+function pick(o){if(locked)return;locked=true;clearInterval(tick);const q=Q[i],ok=o===0;
+document.querySelectorAll(".opt").forEach(b=>{const v=+b.dataset.o;b.disabled=true;if(v===0)b.classList.add("ok");else if(v===o)b.classList.add("no")});
+let m;
+if(ok){
+    combo++;maxC=Math.max(maxC,combo);right++;
+    score = Math.round((right / Q.length) * 10 * 10) / 10; 
+    res[i]=1;pos++;snd("ok");bit("happy");burst("⭐",8);
+    if(combo>=3){streak(combo)}
+    m=`✅ <b>Chính xác!</b> Bit được nạp pin ⚡<br>`
+}
+else{combo=0;lives--;res[i]=0;pos=Math.max(0,pos-1);sweep();snd("bad");bit(lives<=0?"dead":lives==1?"low":"sad");$("cd").classList.remove("shake");void $("cd").offsetWidth;$("cd").classList.add("shake");m=(o===-1?"⏰ <b>Hết giờ!</b>":"❌ <b>Chưa đúng!</b>")+" Bit mất 1 pin 🪫<br>"}
+let explainText = q.e ? `<span class='mu'>Giải thích: ${q.e}</span>` : "";
+$("fb").innerHTML=m+explainText;$("fb").classList.remove("hide");$("nx").classList.remove("hide");
+$("nx").textContent=(lives<=0||i==(Q.length-1))?"Xem kết quả ➜":"Tiếp tục ➜";hud()}
+
+function next(){if(lives<=0||i==(Q.length-1)){end();return}i++;load()}
+function fifty(){if(locked||used1||Q[i].tf)return;used1=true;$("l1").disabled=true;let w=order.filter(o=>o!==0);sh(w).slice(0,2).forEach(o=>{const b=document.querySelector(`.opt[data-o="${o}"]`);if(b){b.disabled=true;b.classList.add("off")}})}
+function plus(){if(locked||used2)return;used2=true;$("l2").disabled=true;t+=10}
+
+function end(){
+  clearInterval(tick);show('s2');snd(lives>0?"win":"lose");if(lives>0)burst("🎉",30);let r;
+  if(lives<=0){$("ei").textContent="🪫";r=["Bit hết pin rồi!","Đừng lo, thử lại nhé."]}
+  else if(score==10){$("ei").textContent="👑";r=["Kỹ sư AI huyền thoại!","Hoàn hảo 10/10! Bit về đến nhà an toàn!"]}
+  else if(score>=8){$("ei").textContent="🏆";r=["Chuyên gia AI","Bit về nhà an toàn nhờ bạn."]}
+  else if(score>=5){$("ei").textContent="🔧";r=["Kỹ sư tập sự","Bit về được nhà nhưng còn hơi loạng choạng."]}
+  else{$("ei").textContent="🔋";r=["Bit về nhà với 1% pin","Suýt nữa thì hỏng!"]}
+  
+  let resultText = "";
+  
+  if (playingChallengeId) {
+      let c = challenges.find(x => x.id === playingChallengeId);
+      if (c) {
+          c.status = 'completed';
+          c.targetScore = score;
+          saveData('bitChallenges', challenges);
+          resultText = `<br><br><b style="color:var(--ok)">🎉 Đã hoàn thành lời thách đấu của ${c.fromN}! Điểm của bạn đã được gửi đi.</b>`;
+      }
+      playingChallengeId = null;
+  } else {
+      if(currentPlayer && score > currentPlayer.s) { 
+          currentPlayer.s = score; 
+          currentPlayer.r = right; 
+          currentPlayer.d = new Date().toLocaleDateString('vi-VN'); 
+          let pIndex = playersList.findIndex(x=>x.n===currentPlayer.n && x.c===currentPlayer.c);
+          if(pIndex > -1) playersList[pIndex] = currentPlayer;
+          saveData('bitPlayersList', playersList);
+      }
+  }
+
+  $("et").textContent=r[0];$("ed").innerHTML=r[1] + resultText;
+  $("fs").textContent=score+"/10";$("fc").textContent=right+"/"+Q.length;$("fm").textContent=maxC;
+  $("hs2").innerHTML=hsList();
+}
+// ================= LOGIC UPLOAD CÂU HỎI NHƯ AZOTA =================
+let uploadedQuestions = [];
+
+window.handleFileUpload = async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    $("qPreview").innerHTML = "<p class='mu'>Đang xử lý file, vui lòng đợi...</p>";
+    const reader = new FileReader();
+    
+    if (file.name.endsWith('.docx')) {
+        reader.onload = function(loadEvent) {
+            mammoth.extractRawText({arrayBuffer: loadEvent.target.result})
+                .then(result => parseTextToQuestions(result.value))
+                .catch(err => alert("Lỗi khi đọc file Word: " + err.message));
+        };
+        reader.readAsArrayBuffer(file);
+    } else if (file.name.endsWith('.txt')) {
+        reader.onload = function(loadEvent) {
+            parseTextToQuestions(loadEvent.target.result);
+        };
+        reader.readAsText(file);
+    } else {
+        alert("Vui lòng tải lên định dạng .docx hoặc .txt");
+        $("qFileInput").value = "";
+    }
+};
+
+function parseTextToQuestions(text) {
+    // Tách văn bản thành các dòng, bỏ dòng trống
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    uploadedQuestions = [];
+    let currentQ = null;
+
+    // Nhận diện "Câu X:" hoặc "Bài X:"
+    const qRegex = /^(Câu|Bài|Question)\s*\d+[\:\.\-]\s*(.*)/i;
+    // Nhận diện "A.", "B.", "C.", "D."
+    const optRegex = /^([A-D])[\:\.\-]\s*(.*)/i;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const qMatch = line.match(qRegex);
+        const optMatch = line.match(optRegex);
+
+        if (qMatch) {
+            if (currentQ) uploadedQuestions.push(currentQ);
+            currentQ = { text: line, options: [], correctIndex: -1 };
+        } else if (optMatch && currentQ) {
+            currentQ.options.push({ char: optMatch[1], text: optMatch[2] || line.substring(2).trim() });
+        } else if (currentQ && currentQ.options.length === 0) {
+            // Nối chuỗi nếu câu hỏi có nhiều dòng
+            currentQ.text += " " + line;
+        }
+    }
+    if (currentQ) uploadedQuestions.push(currentQ);
+    renderQuestionPreview();
+}
+
+function renderQuestionPreview() {
+    const container = $("qPreview");
+    if(uploadedQuestions.length === 0) {
+        container.innerHTML = `<div class="box no c"><b>Không tìm thấy câu hỏi!</b><br>Đảm bảo file của bạn có định dạng:<br><i>Câu 1: [Nội dung]<br>A. [Đáp án 1]<br>B. [Đáp án 2]</i></div>`;
+        return;
+    }
+
+    let html = "<p style='color:var(--ok);font-size:13px;font-weight:bold;text-align:center;'>✓ Đã nhận diện " + uploadedQuestions.length + " câu hỏi. Vui lòng chọn đáp án ĐÚNG.</p>";
+    
+    uploadedQuestions.forEach((q, qIndex) => {
+        html += `<div class="q-block">
+            <div class="q-text">${q.text}</div>
+            <div class="opt-list">`;
+        
+        q.options.forEach((opt, oIndex) => {
+            html += `<label class="opt-item" onclick="selectCorrect(${qIndex}, ${oIndex})">
+                <input type="radio" name="q_${qIndex}" value="${oIndex}">
+                <b>${opt.char}.</b> <span>${opt.text}</span>
+            </label>`;
+        });
+        html += `</div></div>`;
+    });
+    container.innerHTML = html;
+}
+
+window.selectCorrect = function(qIndex, oIndex) {
+    uploadedQuestions[qIndex].correctIndex = oIndex;
+    // Thêm hiệu ứng màu sắc cho đáp án được chọn
+    let block = $("qPreview").querySelectorAll(".q-block")[qIndex];
+    let items = block.querySelectorAll(".opt-item");
+    items.forEach(item => { item.style.backgroundColor = "var(--card)"; item.style.borderColor = "transparent"; });
+    items[oIndex].style.backgroundColor = "color-mix(in srgb, var(--ok) 20%, transparent)";
+    items[oIndex].style.borderColor = "var(--ok)";
+};
+
+window.saveUploadBank = function() {
+    let title = $("bTitle").value.trim();
+    if(!title) return alert("Vui lòng nhập Tên bộ câu hỏi!");
+    if(uploadedQuestions.length === 0) return alert("Chưa có câu hỏi nào được tải lên!");
+
+    let finalQuestions = [];
+    for(let i=0; i<uploadedQuestions.length; i++) {
+        let q = uploadedQuestions[i];
+        if(q.correctIndex === -1) {
+            return alert(`Bạn chưa chọn đáp án đúng cho ${q.text.split(':')[0]}!`);
+        }
+        if(q.options.length < 2) {
+            return alert(`${q.text.split(':')[0]} không có đủ đáp án (ít nhất phải có A, B)!`);
+        }
+
+        // Định dạng lại theo cấu trúc dữ liệu của game (Đáp án đúng nằm ở index 0)
+        let formattedQ = {
+            q: q.text.replace(/^(Câu|Bài|Question)\s*\d+[\:\.\-]\s*/i, ''),
+            a: [],
+            e: "" // Phần giải thích (nếu muốn mở rộng sau này)
+        };
+
+        // Bỏ đáp án đúng vào đầu mảng
+        let correctOpt = q.options[q.correctIndex].text;
+        formattedQ.a.push(correctOpt);
+
+        // Bỏ các đáp án sai vào theo sau
+        q.options.forEach((opt, idx) => {
+            if(idx !== q.correctIndex) {
+                formattedQ.a.push(opt.text);
+            }
+        });
+        finalQuestions.push(formattedQ);
+    }
+
+    // Lưu vào hệ thống Custom Banks hiện tại
+    let bank = {
+        id: 'b_' + Date.now(), 
+        title: title, 
+        author: currentPlayer.n, 
+        authorClass: currentPlayer.c, 
+        qCount: finalQuestions.length, 
+        questions: finalQuestions
+    };
+    customBanks.push(bank);
+    saveData('bitCustomBanks', customBanks);
+    
+    alert(`🎉 Đã lưu thành công bộ câu hỏi "${title}" gồm ${finalQuestions.length} câu!`);
+    
+    // Reset form
+    $("qFileInput").value = "";
+    $("qPreview").innerHTML = `<div class="box"><p class="mu c">Chưa có dữ liệu. Hãy tải file lên.</p></div>`;
+    $("bTitle").value = "";
+    uploadedQuestions = [];
+
+    show('s-manage');
+};
+// BIND CÁC HÀM RA MÔI TRƯỜNG GLOBAL ĐỂ SỬ DỤNG VỚI HTML 'onclick'
+window.show = show;
+window.login = login;
+window.logout = logout;
+window.toggleShowAll = toggleShowAll;
+window.mt = mt;
+window.openChallengeSelect = openChallengeSelect;
+window.confirmSendChallenge = confirmSendChallenge;
+window.playChallenge = playChallenge;
+window.startFreePlay = startFreePlay;
+window.pick = pick;
+window.next = next;
+window.fifty = fifty;
+window.plus = plus;
+window.exportExcel = exportExcel;
+window.exportWord = exportWord;
+window.exportPDF = exportPDF;
+// ================= HỆ THỐNG BẢO MẬT CHỐNG GIAN LẬN =================
+function handleCheatDetection() {
+    let s1 = document.getElementById('s1');
+    // Chỉ kích hoạt bắt lỗi khi đang ở màn hình chơi game (s1 không bị ẩn)
+    if (s1 && !s1.classList.contains('hide')) {
+        alert("🚨 CẢNH BÁO VI PHẠM: Bạn đã chuyển Tab hoặc mở công cụ khác trong lúc đang làm bài! Hệ thống bắt buộc thu bài sớm.");
+        lives = 0; // Ép cạn pin
+        clearInterval(tick); // Dừng thời gian
+        end(); // Gọi hàm kết thúc game ngay lập tức
+    }
+}
+
+// Lắng nghe hành động chuyển Tab trình duyệt
+document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+        handleCheatDetection();
+    }
+});
+
+// Lắng nghe hành động click ra ngoài cửa sổ, mở Mini tool, bật Zalo/Messenger...
+window.addEventListener("blur", function() {
+    handleCheatDetection();
+});
+// KHỞI ĐỘNG GAME
+window.onload = () => {
+    // Tự động nhận diện tài khoản cũ đã lưu
+    const saved = localStorage.getItem('bit_saved_user');
+    if (saved) {
+        try {
+            const u = JSON.parse(saved);
+            if (u.n && u.c) {
+                $("pName").value = u.n;
+                $("pClass").value = u.c;
+                login(true);
+                return;
+            }
+        } catch(e) {}
+    }
+    show('s-login');
+};
+// CHỐNG GIAN LẬN
+function triggerAntiCheat() {
+    const isPlaying = !$("s1").classList.contains("hide");
+    if (isPlaying && lives > 0) {
+        alert("Cảnh báo: Phát hiện hành vi rời khỏi màn hình bài thi! Hệ thống đã tự động thu bài.");
+        lives = 0; 
+        locked = true; 
+        clearInterval(tick); 
+        end(); 
+    }
+}
+document.addEventListener("visibilitychange", () => { if (document.hidden) triggerAntiCheat(); });
+window.addEventListener("blur", () => { triggerAntiCheat(); });
+</script>
+</body>
+</html>
